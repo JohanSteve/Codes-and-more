@@ -1,0 +1,281 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.Arrays;
+
+public class Project {
+
+	static String file = "C:/Users/user1/Desktop/Text.txt";
+	static String arrLines[];
+	static int umoutEf;
+	static int ef[];
+	static int umountStrings;
+	static String strings[];
+	static int currentLine = 0;
+
+	public static void main(String[] args) {
+
+		int nLines = readLines(file);
+		printLines(file, nLines);
+
+		for (int i = 0; i < arrLines.length; i++) {
+
+			System.out.println(arrLines[i]);
+		}
+
+		System.out.println("----------------------------------------------");
+
+		String arrTrim[] = stringsArr(arrLines);
+
+		for (int i = 0; i < arrTrim.length; i++) {
+
+			System.out.print("[" + arrTrim[i] + "]");
+		}
+
+		System.out.println("\n----------------------------------------------");
+
+		int mtx[][] = matrix(arrTrim);
+
+		for (int col = 0; col < mtx[0].length; col++) {
+			System.out.print("  " + arrTrim[1].charAt(col));
+		}
+		System.out.println();
+
+		for (int row = 0; row < mtx.length; row++) {
+			System.out.print(row);
+			for (int col = 0; col < mtx[0].length; col++) {
+
+				System.out.print("[" + mtx[row][col] + "]");
+			}
+			System.out.println();
+		}
+
+		System.out.println();
+
+		int fs[] = finalState(arrTrim, arrLines);
+
+		System.out.println("Final States = " + umoutEf);
+
+		for (int i = 0; i < fs.length; i++) {
+
+			int count = i + 1;
+
+			if (umoutEf == 1) {
+				System.out.println("Final State = " + fs[i]);
+			} else {
+				System.out.println("State " + count + " = " + fs[i]);
+			}
+		}
+
+		System.out.println();
+
+		String str[] = strings(arrTrim);
+
+		System.out.println("Umount Strings = " + umountStrings);
+
+		for (int i = 0; i < str.length; i++) {
+
+			int count = i + 1;
+
+			System.out.println("String " + count + " = " + str[i]);
+		}
+
+		System.out.println();
+
+		System.out.println("String Operated");
+
+		String finalStrings[] = processedStrings(mtx, str, fs, arrTrim);
+
+		for (int i = 0; i < finalStrings.length; i++) {
+
+			System.out.println(str[i] + " = " + finalStrings[i]);
+		}
+
+		System.out.println();
+
+		System.out.println("Acceptation");
+
+		String acep[] = acceptation(finalStrings, fs);
+
+		for (int i = 0; i < acep.length; i++) {
+
+			System.out.println(str[i] + " = " + acep[i]);
+		}
+	}
+
+	public static int readLines(String file) {
+
+		String line = "";
+		int lines = 0;
+
+		try {
+
+			FileReader r = new FileReader(file);
+			BufferedReader buffer = new BufferedReader(r);
+
+			while ((line = buffer.readLine()) != null) {
+
+				lines++;
+			}
+
+		} catch (Exception e) {
+
+			System.out.println(e.getMessage());
+		}
+
+		return lines;
+	}
+
+	public static void printLines(String file, int lines) {
+
+		arrLines = new String[lines];
+
+		try {
+
+			FileReader r = new FileReader(file);
+			BufferedReader buffer = new BufferedReader(r);
+
+			for (int i = 0; i < arrLines.length; i++) {
+
+				arrLines[i] = buffer.readLine();
+			}
+
+		} catch (Exception e) {
+
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public static String[] stringsArr(String arrLines[]) {
+
+		String arrTrim[] = new String[arrLines.length];
+
+		for (int i = 0; i < arrLines.length; i++) {
+			arrTrim[i] = arrLines[i].replaceAll(" ", "");
+		}
+
+		return arrTrim;
+	}
+
+	public static int[][] matrix(String arrTrim[]) {
+
+		int row = arrTrim[currentLine].charAt(0) - 48;
+		int column = arrTrim[currentLine].charAt(1) - 48;
+		currentLine = 2;
+
+		int matrix[][] = new int[row][column];
+
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+
+				matrix[i][j] = arrTrim[currentLine].charAt(j) - 48;
+			}
+			currentLine++;
+		}
+
+		return matrix;
+	}
+
+	public static int[] finalState(String arrTrim[], String arrLines[]) {
+
+		umoutEf = Integer.parseInt(arrTrim[currentLine]);
+		currentLine++;
+
+		String states[] = arrLines[currentLine].split(" ");
+
+		ef = new int[umoutEf];
+
+		for (int i = 0; i < ef.length; i++) {
+
+			ef[i] = Integer.parseInt(states[i]);
+		}
+		currentLine++;
+
+		return ef;
+	}
+
+	public static String[] strings(String arrTrim[]) {
+
+		umountStrings = Integer.parseInt(arrTrim[currentLine]);
+		currentLine++;
+
+		strings = new String[umountStrings];
+
+		for (int i = 0; i < strings.length; i++) {
+
+			strings[i] = arrTrim[currentLine];
+			currentLine++;
+		}
+
+		return strings;
+	}
+
+	public static String[] processedStrings(int matrix[][], String strings[], int fs[], String arrTrim[]) {
+
+		String str[] = new String[strings.length];
+		String aux = "";
+
+		for (int i = 0; i < str.length; i++) {
+
+			aux = Arrays.toString(processStrings(matrix, strings[i].toLowerCase(), fs, arrTrim));
+			str[i] = aux;
+		}
+
+		return str;
+	}
+
+	public static int[] processStrings(int matrix[][], String string, int fs[], String arrTrim[]) {
+
+		int stringOperated[] = new int[string.length()];
+
+		int ActuallyState = 0;
+		int indAscii = 9;
+		int count = 0;
+
+		for (int i = 0; i < stringOperated.length; i++) {
+
+			if (string.charAt(count) - 48 < indAscii) {
+				stringOperated[i] = matrix[ActuallyState][string.charAt(count) - 48];
+
+				ActuallyState = stringOperated[i];
+
+				count++;
+			}
+
+			else {
+
+				stringOperated[i] = matrix[ActuallyState][string.charAt(count) - 97];
+
+				ActuallyState = stringOperated[i];
+
+				count++;
+			}
+		}
+
+		return stringOperated;
+	}
+
+	public static String[] acceptation(String finalStrings[], int fs[]) {
+
+		/*
+		 * 00 0010 1001 10001 111111111111111111111111110111111111111111111 YES
+		 * NO YES NO NO
+		 * 
+		 * a ab abc abccabc abccb b NO NO YES YES NO NO
+		 * 
+		 */
+
+		String acep[] = new String[finalStrings.length];
+
+		for (int i = 0; i < finalStrings.length; i++) {
+
+			if (finalStrings[i].charAt(finalStrings[i].length() - 2) - 48 == fs[0]) {
+
+				acep[i] = "YES";
+			} else {
+				acep[i] = "NO";
+			}
+		}
+
+		return acep;
+	}
+}

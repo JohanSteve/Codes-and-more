@@ -1,0 +1,107 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Felipe {
+
+	private static String sFile = "C:/Users/Felipe Sánchez/Desktop/Project.txt";
+	private static Scanner oFile = null;
+	private static File fichero = null;
+	public static int[][] iAutom;
+	public static char[] cAlph;
+	public static char[] cFinalStatus;
+
+	public static void main(String[] args) {
+
+		fichero = new File(sFile);
+		try {
+			oFile = new Scanner(fichero);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		String[] sInput = oFile.nextLine().split(" ");
+		int iNumStatus = Integer.parseInt(sInput[1]);
+		int iSizeAlph = Integer.parseInt(sInput[0]);
+		cAlph = new char[iSizeAlph];
+		iAutom = new int[iNumStatus][iSizeAlph];
+		char[] iTempStatus = new char[iSizeAlph];
+		int iFinalStatus, iNumTrial;
+
+		// Fill Alphabet
+		cAlph = oFile.nextLine().replaceAll(" ", "").toCharArray();
+
+		// Fill matrix
+		for (int i = 0; i < iNumStatus; i++) {
+			iTempStatus = oFile.nextLine().replaceAll(" ", "").toCharArray();
+			for (int j = 0; j < iNumStatus; j++) {
+				iAutom[i][j] = Character.getNumericValue(iTempStatus[j]);
+			}
+		}
+
+		// Fill Finals Status Array
+		iFinalStatus = Integer.parseInt(oFile.nextLine());
+		cFinalStatus = oFile.nextLine().replaceAll(" ", "").toCharArray();
+
+		iNumTrial = Integer.parseInt(oFile.nextLine());
+
+		for (int i = 0; i < iNumTrial; i++) {
+			char[] cTrial = oFile.nextLine().toCharArray();
+			if(validateTrial(cTrial)){
+				System.out.println("SI");
+			}
+			else{
+				System.out.println("NO");
+			}
+		}
+
+	}
+
+	public static int findChar(char[] cArray,char cSymbol) {
+		int iSizeArray = cArray.length;
+		for (int i = 0; i < iSizeArray; i++) {
+			if (cArray[i] == cSymbol) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	
+	public static int findChar(char[] cArray,int iNumber) {
+		int iSizeArray = cArray.length;
+		for (int i = 0; i < iSizeArray; i++) {
+			if (Character.getNumericValue(cArray[i]) == iNumber) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/*Validate Trial 
+	Return true if word is in language, else false*/
+	public static boolean validateTrial(char[] cTrial) {
+		int iSizeTrial = cTrial.length;
+		char cSymbol;
+		int iPositionSymbol;
+		int iStatus = 0;
+		for (int j = 0; j < iSizeTrial; j++) {
+			cSymbol = cTrial[j];
+			iPositionSymbol = findChar(cAlph,cSymbol);
+			if (iPositionSymbol != -1) {
+				iStatus = iAutom[iStatus][iPositionSymbol];
+			} else {
+				// iStatus=-1 means: char is not in alphabet
+				return false;
+			}
+		}
+		//Validate if iStatus is a FinalStatus
+		iPositionSymbol = findChar(cFinalStatus,iStatus);
+		if (iPositionSymbol != -1) {
+			return true;
+		} else {
+			// iStatus=-1 means: iStatus is not a Final Status
+			return false;
+		}
+	}
+
+}
