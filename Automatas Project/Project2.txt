@@ -5,6 +5,8 @@ public class Project2 {
 
 	static String file = "C:/Users/user1/Desktop/Text4.txt";
 	static String arrLines[];
+	static int currentLine;
+	static String arrEmpty[];
 
 	public static void main(String[] args) {
 
@@ -15,6 +17,55 @@ public class Project2 {
 
 			System.out.println(arrLines[i]);
 		}
+
+		System.out.println("----------------------------------------------");
+
+		String arrTrim[] = stringsArr(arrLines);
+
+		for (int i = 0; i < arrTrim.length; i++) {
+
+			System.out.print("[" + arrTrim[i] + "]");
+		}
+
+		System.out.println("\n----------------------------------------------");
+
+		System.out.println("Matrix With Strings Without Empty");
+
+		char mtx[][] = matrixStrings(arrTrim);
+
+		for (int col = 0; col < arrTrim[3].length(); col++) {
+
+			System.out.print("  " + arrTrim[3].charAt(col));
+		}
+
+		System.out.println();
+
+		for (int row = 0; row < mtx.length; row++) {
+			System.out.print(row);
+			for (int col = 0; col < mtx[0].length; col++) {
+
+				System.out.print("[" + mtx[row][col] + "]");
+			}
+			System.out.println();
+		}
+
+		System.out.println("\n----------------------------------------------");
+
+		System.out.println("Matrix With Empty");
+
+		char mtxEmpty[][] = matrixEmpty(arrEmpty);
+
+		System.out.println("  " + arrTrim[1]);
+
+		for (int row = 0; row < mtxEmpty.length; row++) {
+			System.out.print(row);
+			for (int col = 0; col < mtxEmpty[0].length; col++) {
+
+				System.out.print("[" + mtxEmpty[row][col] + "]");
+			}
+			System.out.println();
+		}
+
 	}
 
 	public static int readLines(String file) {
@@ -58,5 +109,127 @@ public class Project2 {
 
 			System.out.println(e.getMessage());
 		}
+	}
+
+	public static String[] stringsArr(String arrLines[]) {
+
+		String arrTrim[] = new String[arrLines.length];
+
+		for (int i = 0; i < arrLines.length; i++) {
+			arrTrim[i] = arrLines[i].replaceAll(" ", "");
+		}
+
+		return arrTrim;
+	}
+
+	public static char[][] matrixStrings(String arrTrim[]) {
+
+		int row = arrTrim[currentLine].charAt(0) - 48;
+		int umountSymbols = arrTrim[currentLine].charAt(1) - 48;
+		int column = arrTrim[currentLine].charAt(2) - 48;
+		char empty = arrTrim[1].charAt(0);
+		String symbols = arrTrim[3];
+
+		char matrix[][] = new char[row][column];
+		int countEmpty = 0;
+
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				matrix[i][j] = ' ';
+			}
+		}
+
+		for (int lineTemp = 4; lineTemp < arrTrim.length; lineTemp++) {
+
+			if (arrTrim[lineTemp].charAt(1) == empty) {
+
+				countEmpty++;
+			}
+		}
+
+		arrEmpty = new String[countEmpty];
+		int countPos = 0;
+
+		int c = 0;
+		int count = 0;
+		currentLine = 4;
+
+		while (count < umountSymbols) {
+
+			if (arrTrim[currentLine].charAt(1) == empty) {
+
+				arrEmpty[countPos] = arrTrim[currentLine];
+				countPos++;
+			}
+
+			for (int i = 0; i < symbols.length(); i++) {
+
+				if (arrTrim[currentLine].charAt(1) == symbols.charAt(i)) {
+
+					c = i;
+					
+					int r = arrTrim[currentLine].charAt(0) - 48;
+					char value = arrTrim[currentLine].charAt(2);
+
+					if (arrTrim[currentLine].charAt(1) >= 'a') {
+						matrix[r][c] = value;
+					}
+				}
+			}
+
+			currentLine++;
+			count++;
+		}
+
+		return matrix;
+	}
+
+	public static char[][] matrixEmpty(String arrEmpty[]) {
+
+		int higher = 0;
+
+		// Higher
+
+		for (int i = 0; i < arrEmpty.length; i++) {
+
+			if (arrEmpty[i].charAt(0) - 48 > higher) {
+
+				higher = arrEmpty[i].charAt(0) - 48;
+			}
+		}
+
+		char matrix[][] = new char[higher + 1][1];
+
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				matrix[i][j] = ' ';
+			}
+		}
+
+		currentLine = 0;
+		int count = 0;
+
+		while (count < arrEmpty.length) {
+
+			int col = 50;
+
+			for (char i = 'A'; i < 'Z'; i++) {
+
+				if (i == arrEmpty[currentLine].charAt(1)) {
+
+					col = i - i;
+				}
+			}
+
+			int row = arrEmpty[currentLine].charAt(0) - 48;
+			char value = arrEmpty[currentLine].charAt(2);
+
+			matrix[row][col] = value;
+
+			currentLine++;
+			count++;
+		}
+
+		return matrix;
 	}
 }
